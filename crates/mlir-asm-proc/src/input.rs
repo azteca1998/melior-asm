@@ -1,14 +1,14 @@
 use proc_macro2::TokenStream;
 use syn::{
     parse::{Parse, ParseStream},
-    Ident, Result, Token,
+    Expr, Result, Token,
 };
 
 pub struct MacroInput {
     /// The MLIR context to use.
-    pub context: Ident,
+    pub context: Expr,
     /// AST `->` token.
-    pub rarrow: Token![->],
+    pub colon: Token![=>],
     /// The MLIR source code.
     pub mlir_code: TokenStream,
 }
@@ -17,7 +17,7 @@ impl Parse for MacroInput {
     fn parse(input: ParseStream) -> Result<Self> {
         Ok(Self {
             context: input.parse()?,
-            rarrow: input.parse()?,
+            colon: input.parse()?,
             mlir_code: {
                 let mlir_code = input.cursor().token_stream();
 
@@ -43,7 +43,7 @@ mod test {
 
     #[test]
     fn parse_macro_input() {
-        let input: MacroInput = syn::parse2(quote! { ctx ->
+        let input: MacroInput = syn::parse2(quote! { &ctx =>
             func.func @main() -> i32 {
                 %0 = arith.constant 0 : i32
                 return %0 : i32
@@ -51,7 +51,7 @@ mod test {
         })
         .unwrap();
 
-        assert_eq!(input.context.to_string(), "ctx");
+        assert_eq!(input.context, syn::parse2(quote!(&ctx)).unwrap());
         assert_eq!(
             input.mlir_code.to_string(),
             quote! {
