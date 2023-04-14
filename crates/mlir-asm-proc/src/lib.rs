@@ -1,3 +1,5 @@
+#![deny(warnings)]
+
 // Rename crates for accessibility.
 extern crate proc_macro as pm;
 extern crate proc_macro2 as pm2;
