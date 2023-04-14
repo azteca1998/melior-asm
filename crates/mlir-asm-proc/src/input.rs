@@ -1,4 +1,4 @@
-use pm2::TokenStream;
+use proc_macro2::TokenStream;
 use syn::{
     parse::{Parse, ParseStream},
     Ident, Result, Token,
