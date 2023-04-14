@@ -7,6 +7,12 @@ edition = "2021"
 proc-macro = true
 
 [dependencies]
-proc-macro2 = "1.0.56"
 quote = "1.0.26"
 syn = "2.0.15"
+
+[dependencies.melior-next]
+path = "../../../melior-next"
+
+[dependencies.proc-macro2]
+features = ["span-locations"]
+version = "1.0.56"
