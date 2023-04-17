@@ -1,12 +1,18 @@
 use proc_macro2::TokenStream;
 use syn::{
+    custom_keyword, parenthesized,
     parse::{Parse, ParseStream},
-    Expr, Result, Token,
+    punctuated::Punctuated,
+    token::Paren,
+    Expr, LitStr, Result, Token,
 };
+
+custom_keyword!(opt);
 
 pub struct MacroInput {
     /// The MLIR context to use.
     pub context: Expr,
+    pub opt_pass: Option<OptFlags>,
     /// AST `->` token.
     pub colon: Token![=>],
     /// The MLIR source code.
@@ -17,6 +23,7 @@ impl Parse for MacroInput {
     fn parse(input: ParseStream) -> Result<Self> {
         Ok(Self {
             context: input.parse()?,
+            opt_pass: OptFlags::parse(input).ok(),
             colon: input.parse()?,
             mlir_code: {
                 let mlir_code = input.cursor().token_stream();
@@ -32,6 +39,25 @@ impl Parse for MacroInput {
 
                 mlir_code
             },
+        })
+    }
+}
+
+pub struct OptFlags {
+    pub opt_kw: opt,
+    pub paren: Paren,
+    pub flags: Punctuated<LitStr, Token![,]>,
+}
+
+impl Parse for OptFlags {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let content;
+        Ok(Self {
+            opt_kw: input.parse()?,
+            paren: parenthesized!(content in input),
+            flags: content
+                .parse_terminated(<LitStr as Parse>::parse, Token![,])
+                .unwrap(),
         })
     }
 }
@@ -62,5 +88,15 @@ mod test {
             }
             .to_string()
         );
+    }
+
+    #[test]
+    fn parse_opt_flags() {
+        let input: OptFlags = syn::parse2(quote! {
+            opt("--expand-strided-metadata")
+        })
+        .unwrap();
+
+        dbg!(input.flags);
     }
 }

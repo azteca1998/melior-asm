@@ -6,7 +6,7 @@ pub use melior_next;
 /// Parse MLIR IR and add its contents into the specified block.
 #[macro_export]
 macro_rules! mlir_asm {
-    ( $target:expr => $( $inner:tt )* ) => {{
+    ( $target:expr $( , opt( $( $flag:literal ),* $(,)? ) )? => $( $inner:tt )* ) => {{
         use $crate::mlir_asm_impl;
         use melior_next::ir::{BlockRef, OperationRef};
         use std::ops::Deref;
@@ -15,7 +15,7 @@ macro_rules! mlir_asm {
         let parent_op = $target
             .parent_operation()
             .expect("Block should have a parent operation");
-        let module = mlir_asm_impl!( &parent_op.context() => $( $inner )* );
+        let module = mlir_asm_impl!( &parent_op.context() $(opt($($flag),*))? => $( $inner )* );
 
         // Transfer its contents to the target block.
         fn push_recursive(m: BlockRef, op: OperationRef) {
