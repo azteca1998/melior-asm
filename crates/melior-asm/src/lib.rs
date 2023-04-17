@@ -1,1 +1,1 @@
-pub use mlir_asm_proc::mlir_asm;
+pub use melior_asm_proc::mlir_asm;

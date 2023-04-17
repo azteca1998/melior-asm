@@ -1,5 +1,5 @@
+use melior_asm::mlir_asm;
 use melior_next::{dialect::Registry, ir::Module, utility::register_all_dialects, Context};
-use mlir_asm::mlir_asm;
 
 fn main() {
     let context = Context::new();
