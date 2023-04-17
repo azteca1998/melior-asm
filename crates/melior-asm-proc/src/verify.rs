@@ -30,7 +30,7 @@ pub fn verify_mlir(mlir_stream: TokenStream) {
         };
         let location_span = find_span_from_stream_and_location(mlir_stream.clone(), location);
 
-        location_span.unwrap().before().error("").emit();
+        location_span.unwrap().before().error(diagnostic.to_string()).emit();
         LogicalResult::success()
     });
 
@@ -67,7 +67,6 @@ fn find_span_from_stream_and_location(stream: TokenStream, location: LineColumn)
                     }
                 }
                 _ => {
-                    dbg!((&token_tree, token_tree.span().start()));
                     if token_tree.span().start() == location {
                         return Some(token_tree.span());
                     }
@@ -78,7 +77,6 @@ fn find_span_from_stream_and_location(stream: TokenStream, location: LineColumn)
         None
     }
 
-    dbg!(location);
     let fallback_span = stream.span();
     inner(stream, location).unwrap_or(fallback_span)
 }

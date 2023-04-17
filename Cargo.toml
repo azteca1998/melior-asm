@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "crates/mlir-asm",
-    "crates/mlir-asm-proc",
+    "crates/melior-asm",
+    "crates/melior-asm-proc",
 ]
