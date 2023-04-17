@@ -1,5 +1,10 @@
 use melior_asm::mlir_asm;
-use melior_next::{dialect::Registry, ir::Module, utility::register_all_dialects, Context};
+use melior_next::{
+    dialect::Registry,
+    ir::{Location, Module},
+    utility::register_all_dialects,
+    Context,
+};
 
 fn main() {
     let context = Context::new();
@@ -8,7 +13,9 @@ fn main() {
     register_all_dialects(&registry);
     context.append_dialect_registry(&registry);
 
-    let module: Module = mlir_asm! { &context =>
+    let module = Module::new(Location::unknown(&context));
+    let block = module.body();
+    mlir_asm! { block =>
         func.func @main() -> i32 {
             %0 = arith.constant 0 : i32
             return %0 : i32
